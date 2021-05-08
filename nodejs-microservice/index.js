@@ -1,5 +1,5 @@
 /**
- * @author Varun Kumar <varunon9@gmail.com>
+ * @author hartono kurniawan <xhartono@gmail.com>
  */
 
 const app = require('express')();
@@ -42,7 +42,7 @@ connection.connect((err) => {
 app.get('/', (req, res) => {
 	res.json({
 		success: true,
-		message: 'Hello world'
+		message: 'NodeJS dan MySQL dengan docker'
 	});
 });
 
@@ -51,7 +51,7 @@ app.post('/add-student', (req, res) => {
 	const student = req.body;
 	const query = 'INSERT INTO students values(?, ?)';
 
-	connection.query(query, [student.rollNo, student.name], (err, results, fields) => {
+	connection.query(query, [student.nopeserta, student.nama], (err, results, fields) => {
 		if (err) {
 			console.error(err);
 			res.json({

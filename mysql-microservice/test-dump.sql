@@ -23,8 +23,8 @@ DROP TABLE IF EXISTS `students`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `students` (
-  `rollNo` int(11) NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
+  `nopeserta` int(11) NOT NULL,
+  `nama` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`rollNo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -35,7 +35,8 @@ CREATE TABLE `students` (
 
 LOCK TABLES `students` WRITE;
 /*!40000 ALTER TABLE `students` DISABLE KEYS */;
-INSERT INTO `students` VALUES (1130328,'Varun Kumar');
+INSERT INTO `students` VALUES (1130328,'Azyva Giselle Kurniawan');
+INSERT INTO `students` VALUES (1130328,'Larasati Kirana');
 /*!40000 ALTER TABLE `students` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

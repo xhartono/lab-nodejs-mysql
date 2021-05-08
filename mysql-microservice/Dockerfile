@@ -2,7 +2,7 @@
 FROM mysql:5.7
 
 ## The maintainer name and email
-MAINTAINER Varun Kumar <varunon9@gmail.com>
+MAINTAINER hartono kurniawan (xhartono@gmail.com)
 
 # database = test and password for root = password
 ENV MYSQL_DATABASE=test \
