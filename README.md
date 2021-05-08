@@ -72,7 +72,7 @@ docker run  -d \
 
 ### Uji coba aplikasi yang lengkap
 
-1. Akses homepaga dari app:
+1. Akses homepage dari app:
 ```bash
 $ curl -X GET localhost:4000
 ```
