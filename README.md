@@ -72,7 +72,7 @@ $ ls
 ```
 > Catatan:
 > - Dockerfile: untuk membuat Docker Images
-> - package.json: Konfigurasi dan dependencies yang diperlukan nodejs applikasi
+> - package.json: Konfigurasi dan dependencies yang diperlukan aplikasi nodejs
 > - index.js: aplikasi nodejs akses ke mysql
 
 2. Build image nodejs berdasarkan Dockerfile yang telah dibuat
