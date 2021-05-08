@@ -16,7 +16,7 @@ Menjalankan aplikasi nodejs dengan database mysql menggunakan arsitektur docker 
 
 1. Clone repository ini dengan
 ```bash
-$ git clone https://github.com/xhartono/nodejs-mysql
+$ git clone https://github.com/xhartono/nodejs-mysql.git
 ```
 2. Pindah ke direktori `nodejs-mysql`
 ```bash
@@ -32,7 +32,7 @@ $ docker images
 4. Jalankan images yang sudah berhasil dibuat 
 ```bash
 $ docker ps -a
-$ docker run -d -p 1111:3306 -v ./data:/var/lib/mysql --name mysqlku1 tutorial/mysqlku
+$ docker run -d -p 1111:3306 -v $(pwd)/data:/var/lib/mysql --name mysqlku1 tutorial/mysqlku
 $ docker ps -a
 ```
 5. Lihat logs apakah container tidak terdapat error
@@ -41,9 +41,10 @@ $ docker logs -f mysqlku1
 ```
 > Catatan:
 > - Tekan ctrl-c untuk keluar dari logs
+
 6. Lihat apakah data dummy telah terbentuk pada database
 ```bash
-$ docker exec -t mysqlku1 mysql -uroot -ppassword test -e 'select * from students;'
+$ docker exec -t mysqlku1 mysql -uroot -ppassword test -e 'select * from students;
 ```
 7. Anda telah berhasil menjalankan mysql pada docker container
 
@@ -51,13 +52,22 @@ $ docker exec -t mysqlku1 mysql -uroot -ppassword test -e 'select * from student
 1. Aktifkan direktory nodejs-microservice
 ```bash
 $ cd ../nodejs-microservice
+$ ls
 ```
-2. Build image nodejs berdasarkan Dockerfile
+> Catatan:
+> - Dockerfile: untuk membuat Docker Images
+> - package.json: Konfigurasi dan dependencies yang diperlukan nodejs applikasi
+> - index.js: aplikasi nodejs akses ke mysql
+
+2. Build image nodejs berdasarkan Dockerfile yang telah dibuat
 ```bash
 $ docker images
 $ docker built -t tutorial/nodejsku .
 $ docker images
 ```
+> Catatan:
+> - Penjelasan isi Dockerfile menyusul :)
+
 3. Jalankan image yang baru dibuat semagai container
 ```
 docker run  -d \
@@ -78,8 +88,17 @@ $ curl -X GET localhost:4000
 ```
 2. Tampilkan semua students
 ```bash
-$ curl -X GET localhost:5000/get-students
+$ curl -X POST localhost:4000/get-students
 ```
+> Catatan:
+> - Agar tampilan hasil query diatas tersusun rapi, install jq
+> di Ubuntu
+> $ sudo apt install -y jq
+> di Centos
+> $ sudo dnf install -y jq
+> - Setelah instalasi jq selesai, tambahkan jq pada perintah get-students, seperti dibawah ini:
+> $ curl -X POST localhost:4000/get-students | jq
+> 
 3. Tambahkan student
 ```bash
 curl --header "Content-Type: application/json" \
@@ -88,7 +107,7 @@ curl --header "Content-Type: application/json" \
 ```
 4. Sekali lagi lihat semua student untuk melihat perubahan
 ```bash
-$ curl -X POST 192.168.43.147:4000/get-students
+$ curl -X POST localhost:4000/get-students | jq
 ```
 5. Silahkan coba untuk memodifikasi source code dari nodejs app (index.js), build image, run container dan test kembali.
 
