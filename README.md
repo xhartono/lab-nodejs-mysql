@@ -32,7 +32,7 @@ $ sudo dnf install tree -y
 ```
 2. Pindah ke direktori `nodejs-mysql`
 ```bash
-$ cd nodejs-mysql/mysql-microservice
+$ cd nodejs-mysql/mysql
 $ ls
 ```
 3. Buat MySQL docker image berdasarkan Dockerfile yang telah dibuat
@@ -65,9 +65,9 @@ $ docker exec -t mysqlku1 \
 7. Anda telah berhasil menjalankan mysql pada docker container
 
 ### Menjalankan NodeJS pada docker container
-1. Aktifkan direktory nodejs-microservice
+1. Aktifkan direktory nodejs
 ```bash
-$ cd ../nodejs-microservice
+$ cd ../nodejs
 $ ls
 ```
 > Catatan:
