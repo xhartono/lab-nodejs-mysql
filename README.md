@@ -92,13 +92,19 @@ $ curl -X POST localhost:4000/get-students
 ```
 > Catatan:
 > - Agar tampilan hasil query diatas tersusun rapi, install jq
-> di Ubuntu
-> $ sudo apt install -y jq
-> di Centos
-> $ sudo dnf install -y jq
+- di Ubuntu
+```bash
+$ sudo apt install -y jq
+```
+- di Centos
+```bash
+$ sudo dnf install -y jq
+```
 > - Setelah instalasi jq selesai, tambahkan jq pada perintah get-students, seperti dibawah ini:
-> $ curl -X POST localhost:4000/get-students | jq
-> 
+```bash
+$ curl -X POST localhost:4000/get-students | jq
+```
+
 3. Tambahkan student
 ```bash
 curl --header "Content-Type: application/json" \
