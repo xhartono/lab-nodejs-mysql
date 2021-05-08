@@ -32,7 +32,10 @@ $ docker images
 4. Jalankan images yang sudah berhasil dibuat 
 ```bash
 $ docker ps -a
-$ docker run -d -p 1111:3306 -v $(pwd)/data:/var/lib/mysql --name mysqlku1 tutorial/mysqlku
+$ docker run -d -p 3306:3306 \
+	-v $(pwd)/data:/var/lib/mysql \
+	--name mysqlku1 \
+	tutorial/mysqlku
 $ docker ps -a
 ```
 5. Lihat logs apakah container tidak terdapat error
@@ -44,7 +47,8 @@ $ docker logs -f mysqlku1
 
 6. Lihat apakah data dummy telah terbentuk pada database
 ```bash
-$ docker exec -t mysqlku1 mysql -uroot -ppassword test -e 'select * from students;
+$ docker exec -t mysqlku1 \
+	mysql -uroot -ppassword test -e 'select * from students;
 ```
 7. Anda telah berhasil menjalankan mysql pada docker container
 
@@ -65,18 +69,16 @@ $ docker images
 $ docker built -t tutorial/nodejsku .
 $ docker images
 ```
-> Catatan:
-> - Penjelasan isi Dockerfile menyusul :)
 
 3. Jalankan image yang baru dibuat semagai container
 ```
 docker run  -d \
 	-p 4000:4000 \
-	-e MYSQL_USER='root' \
-	-e MYSQL_PASSWORD='password' \
-	-e MYSQL_DATABASE='test' \
-	-e MYSQL_HOST='172.17.0.2' \
-	--link test-mysql-microservice:db \
+	-e MYSQL_USER=root \
+	-e MYSQL_PASSWORD=password \
+	-e MYSQL_DATABASE=test \
+	-e MYSQL_HOST=db \
+	--link mysqlku1:db \
 	--name=nodejsku1 nodejsku
 ```
 
