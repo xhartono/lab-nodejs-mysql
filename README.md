@@ -17,6 +17,18 @@ Menjalankan aplikasi nodejs dengan database mysql menggunakan arsitektur docker 
 1. Clone repository ini dengan
 ```bash
 $ git clone https://github.com/xhartono/nodejs-mysql.git
+$ git checkout master
+$ tree
+```
+> Catatan:
+> - Jika utilitas tree belum diinstall:
+- Di Ubuntu
+```bash
+$ sudo apt install tree -y
+```
+- di Centos
+```bash
+$ sudo dnf install tree -y
 ```
 2. Pindah ke direktori `nodejs-mysql`
 ```bash
