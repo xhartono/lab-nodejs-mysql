@@ -24,39 +24,30 @@ $ cd nodejs-mysql/mysql-microservice
 $ ls
 ```
 3. Buat MySQL docker image berdasarkan Dockerfile yang telah dibuat
-```
-$ cat Dockerfile
-
-```
 ```bash
 $ docker images
 $ docker build -t tutorial/mysqlku .
 $ docker images
 ```
-
 4. Jalankan images yang sudah berhasil dibuat 
 ```bash
 $ docker ps -a
 $ docker run -d -p 1111:3306 -v ./data:/var/lib/mysql --name mysqlku1 tutorial/mysqlku
 $ docker ps -a
 ```
-
 5. Lihat logs apakah container tidak terdapat error
 ```bash
 $ docker logs -f mysqlku1
 ```
 > Catatan:
 > - Tekan ctrl-c untuk keluar dari logs
-
 6. Lihat apakah data dummy telah terbentuk pada database
 ```bash
 $ docker exec -t mysqlku1 mysql -uroot -ppassword test -e 'select * from students;'
 ```
-
 7. Anda telah berhasil menjalankan mysql pada docker container
 
 ### Menjalankan NodeJS pada docker container
-
 1. Aktifkan direktory nodejs-microservice
 ```bash
 $ cd ../nodejs-microservice
@@ -67,7 +58,6 @@ $ docker images
 $ docker built -t tutorial/nodejsku .
 $ docker images
 ```
-
 3. Jalankan image yang baru dibuat semagai container
 ```
 docker run  -d \
@@ -86,26 +76,24 @@ docker run  -d \
 ```bash
 $ curl -X GET localhost:4000
 ```
-
 2. Tampilkan semua students
 ```bash
 $ curl -X GET localhost:5000/get-students
 ```
-
 3. Tambahkan student
 ```bash
-curl --header "Content-Type: application/json" -d '{"nopeserta": 1130360, "name": "Abizhar"}' -X POST localhost:4000/add-student`
+curl --header "Content-Type: application/json" \
+	-d '{"nopeserta": 1130360, "name": "Abizhar"}' \
+	-X POST localhost:4000/add-student
 ```
-
 4. Sekali lagi lihat semua student untuk melihat perubahan
 ```bash
 $ curl -X POST 192.168.43.147:4000/get-students
 ```
-
 5. Silahkan coba untuk memodifikasi source code dari nodejs app (index.js), build image, run container dan test kembali.
 
 ### Queries/Comments
 
-Anda dapat menghubungi saya di xhartono@gmail.com atau buat pertanyaan  melalui /issue.
+Anda dapat menghubungi saya di xhartono@gmail.com atau menyampaikan komentar atau pertanyaan  melalui /issue.
 
-### Arigato Thank You Matur Nuhun Mauliate
+# Arigato Thank You Matur Nuhun Mauliate
