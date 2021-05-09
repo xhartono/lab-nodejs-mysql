@@ -15,4 +15,4 @@ RUN npm install
 COPY . .
 
 # Run app
-CMD ["npm", "start"]
+CMD ["./wait-for-mysql.sh","db","npm", "start"]

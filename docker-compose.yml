@@ -1,0 +1,21 @@
+version: '3.9'
+services:
+        db:
+                build: ./mysql
+                volumes:
+                        - mysql-vol:/var/lib/mysql
+
+        api:
+                build: ./nodejs
+                ports:
+                        - 4000:4000
+                environment: 
+                        - "MYSQL_USER=root"
+                        - "MYSQL_PASSWORD=password"
+                        - "MYSQL_DATABASE=test"
+                        - "MYSQL_HOST=db"
+                depends_on: 
+                        - db
+
+volumes: 
+        mysql-vol:
