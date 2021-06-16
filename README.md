@@ -1,68 +1,154 @@
 # Menggunakan nodejs-mysql dengan docker
 
-Menjalankan aplikasi nodejs dengan database mysql menggunakan arsitektur docker dan microservice
+---
 
-### Tujuan
+## Tujuan Instruksional Khusus
 
+- Menjalankan aplikasi nodejs dengan database mysql menggunakan arsitektur docker dan microservice
 - Menjalankan server mysql di docker container.
 - Menjalankan aplikasi nodejs sederhana pada docker container yang terpisah.
 - Menghubungkan kedua container dan uji integrasi aplikasi mysql-nodejs.
 
-### Persyaratan
+---
 
-- Telah menginstall docker di sistem Anda.
+## Persyaratan
 
-### Menjalankan MySQL Container
+- docker dan docker-compose sudah terpasang pada Operating System yang digunakan.
 
-1. Clone repository ini dengan
+---
+
+## Prosedur 1: Menjalankan MySQL Container
+
+----
+
+#### Clone repository
+
 ```bash
-$ git clone https://github.com/xhartono/nodejs-mysql.git
+$ git clone https://github.com/xhartono/lab-nodejs-mysql.git
 $ git checkout master
 $ tree
+.
+├── docker-compose.yml
+├── mysql
+│   ├── Dockerfile
+│   └── test-dump.sql
+├── nodejs
+│   ├── Dockerfile
+│   ├── index.js
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── test_connection.js
+│   └── wait-for-mysql.sh
+├── README.md
+└── values.yaml
 ```
-> Catatan:
-> - Jika utilitas tree belum diinstall:
-- Di Ubuntu
-```bash
-$ sudo apt install tree -y
-```
-- di Centos
-```bash
-$ sudo dnf install tree -y
-```
-2. Pindah ke direktori `nodejs-mysql`
-```bash
-$ cd nodejs-mysql/mysql
-$ ls
-```
-3. Buat MySQL docker image berdasarkan Dockerfile yang telah dibuat
-```bash
-$ docker images
-$ docker build -t tutorial/mysqlku .
-$ docker images
-```
-4. Jalankan images yang sudah berhasil dibuat 
-```bash
-$ docker ps -a
-$ docker run -d -p 3306:3306 \
-	-v $(pwd)/data:/var/lib/mysql \
-	--name mysqlku1 \
-	tutorial/mysqlku
-$ docker ps -a
-```
-5. Lihat logs apakah container tidak terdapat error
-```bash
-$ docker logs -f mysqlku1
-```
-> Catatan:
-> - Tekan ctrl-c untuk keluar dari logs
 
-6. Lihat apakah data dummy telah terbentuk pada database
+----
+
+#### Lihat Dockerfile untuk membuat docker Image
+
 ```bash
-$ docker exec -t mysqlku1 \
-	mysql -uroot -ppassword test -e 'select * from students;
+$ cd lab-nodejs-mysql/mysql
+$ ls
+Dockerfile  test-dump.sql
 ```
-7. Anda telah berhasil menjalankan mysql pada docker container
+
+> ✍️Catatan:
+> - berkas Dockerfile berisi informasi yang digunakan docker untuk membangun image
+> - test-dump.sql, berisi perintah sql untuk membuat table dan mengisi dengan dummy data.
+
+----
+
+#### Lihat isi Dockerfile
+
+```bash
+$ more Dockerfile
+## Pull the mysql:5.7 image
+FROM mysql:5.7
+
+## The maintainer name and email
+MAINTAINER Inixindo (rbx.inixindo@gmail.com)
+
+# database = test and password for root = password
+ENV MYSQL_DATABASE=sistradb \
+    MYSQL_ROOT_PASSWORD=inix2021
+
+# when container will be started, we'll have `test` database created with this schema
+COPY ./test-dump.sql /docker-entrypoint-initdb.d/
+```
+----
+
+> :writing_hand:Catatan:
+> - FROM: membangun berdasarkan image pada nilai FROM
+> - ENV: akan mengisi variable MYSQL_DATABASE dan MYSQL_ROOT_PASSWORD dengan nilai 'test' dan 'password'. Container akan membuat database dengan nama 'test' dan username root dengan password 'inix2021'.
+> - COPY: menyalin berkas test-dump.sql pada lokal direktori ke direktori docker-entrypoint-initdb.d pada direktori di image.
+> - Berkas test-dump.sql, karena diletakkan pada direktori docker-entrypoint-initdb.d, container dari image mysql:5.7 ini akan otomatis mengeksekusi perintah-perintah yang ada didalam berkas test-dump.sql.
+> - Pada saat di run, container akan membuat database dengan nama sistradb, dengan username: root dan password: inix2021
+> - Table peserta akan dibuat secara otomatis, dan diisi dengan 2 baris data.
+
+----
+
+#### Membangun docker image
+
+```bash
+$ docker images
+$ docker build -t tutorial/mysql .
+$ docker images
+```
+
+----
+
+#### Buat docker Volume untuk mysql data
+
+```bash
+$ docker volume create mysql_volume
+```
+
+----
+
+#### Jalankan container
+
+```bash
+$ docker ps -a
+$ docker run \
+	-p 3306:3306 \
+	-v mysql_volume:/var/lib/mysql \
+	--name mysqlku \
+	-d tutorial/mysql
+$ docker ps -a
+```
+
+----
+
+#### Inspeksi Log
+
+```bash
+$ docker logs -f mysqlku
+```
+
+> :writing_hand:Catatan:
+> - Tekan <ctrl-c> untuk keluar dari logs
+> - Jika sukses, perhatikan pada log akan terdapat informasi seperti berikut:
+```bash
+2021-06-16T05:59:40.122523Z 0 [Note] mysqld: ready for connections.
+```
+> - Lihat apakah terdapat error?
+> - Minta bantuan fasilitator jika tidak bisa memperbaiki error.
+
+----
+
+#### Lihat apakah data dummy telah terbentuk pada database
+
+```bash
+$ docker exec -t mysqlku \
+	mysql -uroot -pinix2021 sistradb -e 'select * from peserta;
+```
+
+> ✍️Catatan:
+> - -p: diisi dengan password
+> - sistradb: nama database yang sebelumnya telah dibuat
+> - -e: perintah SQL yang digunakan untuk melihat data pada table peserta
+> - table peserta beserta datanya di ciptakan melalui file test-dump.sql pada pembahasan sebelumnya
 
 ### Menjalankan NodeJS pada docker container
 1. Aktifkan direktory nodejs
