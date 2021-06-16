@@ -11,8 +11,8 @@ services:
                         - 4000:4000
                 environment: 
                         - "MYSQL_USER=root"
-                        - "MYSQL_PASSWORD=password"
-                        - "MYSQL_DATABASE=test"
+                        - "MYSQL_PASSWORD=inix2021"
+                        - "MYSQL_DATABASE=sistradb"
                         - "MYSQL_HOST=db"
                 depends_on: 
                         - db

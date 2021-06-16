@@ -1,18 +1,12 @@
-# Use Node v8 as the base image.
-FROM node:14
+FROM node:alpine
 
-# create and set app directory
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
 COPY package*.json ./
-RUN npm install
+RUN npm  install && apk add bash
 
-# Bundle app source
 COPY . .
 
-# Run app
-CMD ["./wait-for-mysql.sh","db","npm", "start"]
+EXPOSE 4000
+
+CMD [ "npm", "start"]

@@ -4,7 +4,7 @@
 
 ## Tujuan Instruksional Khusus
 
-- Menjalankan aplikasi nodejs dengan database mysql menggunakan arsitektur docker dan microservice
+- Menjalankan aplikasi nodejs dengan database mysql menggunakan arsitektur microservice 
 - Menjalankan server mysql di docker container.
 - Menjalankan aplikasi nodejs sederhana pada docker container yang terpisah.
 - Menghubungkan kedua container dan uji integrasi aplikasi mysql-nodejs.
@@ -45,7 +45,7 @@ $ tree
 
 ----
 
-#### Lihat Dockerfile untuk membuat docker Image
+#### Membangun docker Image
 
 ```bash
 $ cd lab-nodejs-mysql/mysql
@@ -84,7 +84,32 @@ COPY ./test-dump.sql /docker-entrypoint-initdb.d/
 > - COPY: menyalin berkas test-dump.sql pada lokal direktori ke direktori docker-entrypoint-initdb.d pada direktori di image.
 > - Berkas test-dump.sql, karena diletakkan pada direktori docker-entrypoint-initdb.d, container dari image mysql:5.7 ini akan otomatis mengeksekusi perintah-perintah yang ada didalam berkas test-dump.sql.
 > - Pada saat di run, container akan membuat database dengan nama sistradb, dengan username: root dan password: inix2021
-> - Table peserta akan dibuat secara otomatis, dan diisi dengan 2 baris data.
+
+----
+
+#### Lihat isi file test-dump.sql
+
+```bash
+DROP TABLE IF EXISTS `peserta`
+CREATE TABLE `peserta` (
+  `nopeserta` int(11) AUTO_INCREMENT,
+  `nama` varchar(255) DEFAULT NULL,
+  `alamat` varchar(255) DEFAULT NULL,
+  `kota` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`nopeserta`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+LOCK TABLES `peserta` WRITE;
+INSERT INTO `peserta` VALUES (1,'Azyva Giselle Kurniawan', 'Ciawi', 'Bogor');
+INSERT INTO `peserta` VALUES (2,'Larasati Kirana', 'Permata Hijau', 'Jakarta');
+UNLOCK TABLES;
+```
+
+----
+
+> :writing_hand:Catatan:
+> - Berkas test-dump.sql: berisi perintah untuk menciptakan table peserta (CREATE) dan diisi (INSERT) dengan data dummy
+> - Table peserta akan dibuat secara otomatis, dan diisi dengan 2 record.
+
 
 ----
 
@@ -96,12 +121,15 @@ $ docker build -t tutorial/mysql .
 $ docker images
 ```
 
+> :writing_hand: Catatan:
+> - Perhatikan tanda titik (dot .) diakhir perintah docker build
 ----
 
 #### Buat docker Volume untuk mysql data
 
 ```bash
 $ docker volume create mysql_volume
+$ docker volume list
 ```
 
 ----
@@ -118,6 +146,10 @@ $ docker run \
 $ docker ps -a
 ```
 
+> :writing_hand: Catatan
+> - Bisakah menjelaskan opsi-opsi pada perintah diatas?
+> - Jika ada  yang belum faham mengenai opsi perintah diatas, tanyakan fasilitator
+
 ----
 
 #### Inspeksi Log
@@ -127,13 +159,14 @@ $ docker logs -f mysqlku
 ```
 
 > :writing_hand:Catatan:
-> - Tekan <ctrl-c> untuk keluar dari logs
 > - Jika sukses, perhatikan pada log akan terdapat informasi seperti berikut:
 ```bash
 2021-06-16T05:59:40.122523Z 0 [Note] mysqld: ready for connections.
 ```
 > - Lihat apakah terdapat error?
 > - Minta bantuan fasilitator jika tidak bisa memperbaiki error.
+> - Tekan <ctrl-c> untuk keluar dari logs
+
 
 ----
 
@@ -150,25 +183,37 @@ $ docker exec -t mysqlku \
 > - -e: perintah SQL yang digunakan untuk melihat data pada table peserta
 > - table peserta beserta datanya di ciptakan melalui file test-dump.sql pada pembahasan sebelumnya
 
-### Menjalankan NodeJS pada docker container
-1. Aktifkan direktory nodejs
+---
+## Menjalankan NodeJS pada docker container
+
+----
+
+#### Aktifkan direktory nodejs
+
 ```bash
 $ cd ../nodejs
 $ ls
+Dockerfile  index.js  package.json  package-lock.json  test_connection.js  wait-for-mysql.sh
 ```
 > Catatan:
 > - Dockerfile: untuk membuat Docker Images
 > - package.json: Konfigurasi dan dependencies yang diperlukan aplikasi nodejs
-> - index.js: aplikasi nodejs akses ke mysql
+> - index.js: aplikasi nodejs untuk mengakses data pada mysql
+> - test_connection.js: nodejs script yang digunakan untuk menguji koneksi ke mysql
+> - wait-for-mysql.sh: digunakan container untuk menunggu proses mysql sehingga service mysql aktif dan bisa digunakan
 
-2. Build image nodejs berdasarkan Dockerfile yang telah dibuat
+----
+
+#### Membangun image nodejs
+
 ```bash
 $ docker images
-$ docker built -t tutorial/nodejsku .
+$ docker build -t tutorial/nodejs .
 $ docker images
 ```
 
-3. Jalankan image yang baru dibuat semagai container
+#### Jalankan container berdasarkan image
+
 ```
 docker run  -d \
 	-p 4000:4000 \
@@ -176,49 +221,59 @@ docker run  -d \
 	-e MYSQL_PASSWORD=password \
 	-e MYSQL_DATABASE=test \
 	-e MYSQL_HOST=db \
-	--link mysqlku1:db \
-	--name=nodejsku1 nodejsku
+	--link mysqlku:db \
+	--name nodejsku \
+	-d tutorial/nodejs
 ```
 
-### Uji coba aplikasi yang lengkap
+---
+## Prosedur 3: Akses aplikasi
 
-1. Akses homepage dari app:
+----
+
+#### Akses homepage dari app:
+
 ```bash
 $ curl -X GET localhost:4000
 ```
-2. Tampilkan semua students
+
+#### Tampilkan semua peserta:
+
 ```bash
-$ curl -X POST localhost:4000/get-students
+$ curl -X POST localhost:4000/daftar
 ```
-> Catatan:
+> :writing_hand:Catatan:
+>
 > - Agar tampilan hasil query diatas tersusun rapi, install jq
-- di Ubuntu
+> - di Ubuntu
 ```bash
 $ sudo apt install -y jq
 ```
-- di Centos
+> - di Centos
 ```bash
 $ sudo dnf install -y jq
 ```
 > - Setelah instalasi jq selesai, tambahkan jq pada perintah get-students, seperti dibawah ini:
 ```bash
-$ curl -X POST localhost:4000/get-students | jq
+$ curl -X GET localhost:4000/daftar | jq
 ```
 
-3. Tambahkan student
+----
+
+#### Tambahkan peserta
+
 ```bash
 curl --header "Content-Type: application/json" \
-	-d '{"nopeserta": 1130360, "name": "Abizhar"}' \
-	-X POST localhost:4000/add-student
+	-d '{"nopeserta": 1130360, "nama": "Abizhar", "alamat": "jl. imam bonjol", "kota":"jakarta"}' \
+	-X POST localhost:4000/tambah
 ```
-4. Sekali lagi lihat semua student untuk melihat perubahan
+
+----
+
+#### Lihat kembali peserta
+
 ```bash
 $ curl -X POST localhost:4000/get-students | jq
 ```
-5. Silahkan coba untuk memodifikasi source code dari nodejs app (index.js), build image, run container dan test kembali.
-
-### Queries/Comments
-
-Anda dapat menghubungi saya di xhartono@gmail.com atau menyampaikan komentar atau pertanyaan  melalui /issue.
-
-# Arigato Thank You Matur Nuhun Mauliate
+----
+# Terima kasih
