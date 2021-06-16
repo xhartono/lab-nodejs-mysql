@@ -184,7 +184,7 @@ $ docker exec -t mysqlku \
 > - table peserta beserta datanya di ciptakan melalui file test-dump.sql pada pembahasan sebelumnya
 
 ---
-## Menjalankan NodeJS pada docker container
+## Prosedur 2: Menjalankan NodeJS pada docker container
 
 ----
 
