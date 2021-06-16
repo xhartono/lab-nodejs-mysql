@@ -27,25 +27,11 @@
 $ git clone https://github.com/xhartono/lab-nodejs-mysql.git
 $ git checkout master
 $ tree
-.
-├── docker-compose.yml
-├── mysql
-│   ├── Dockerfile
-│   └── test-dump.sql
-├── nodejs
-│   ├── Dockerfile
-│   ├── index.js
-│   ├── package.json
-│   ├── package-lock.json
-│   ├── test_connection.js
-│   └── wait-for-mysql.sh
-├── README.md
-└── values.yaml
 ```
 
 ----
 
-#### Membangun docker Image
+#### Membangun MySQL docker Image
 
 ```bash
 $ cd lab-nodejs-mysql/mysql
@@ -53,7 +39,7 @@ $ ls
 Dockerfile  test-dump.sql
 ```
 
-> ✍️Catatan:
+> :writing_hand:Catatan:
 > - berkas Dockerfile berisi informasi yang digunakan docker untuk membangun image
 > - test-dump.sql, berisi perintah sql untuk membuat table dan mengisi dengan dummy data.
 
@@ -63,24 +49,31 @@ Dockerfile  test-dump.sql
 
 ```bash
 $ more Dockerfile
+
 ## Pull the mysql:5.7 image
 FROM mysql:5.7
 
-## The maintainer name and email
+## Maintainer name dan email
 MAINTAINER Inixindo (rbx.inixindo@gmail.com)
 
-# database = test and password for root = password
+# database = test dan root password = inix2021
 ENV MYSQL_DATABASE=sistradb \
     MYSQL_ROOT_PASSWORD=inix2021
 
 # when container will be started, we'll have `test` database created with this schema
 COPY ./test-dump.sql /docker-entrypoint-initdb.d/
+
 ```
+
 ----
 
 > :writing_hand:Catatan:
 > - FROM: membangun berdasarkan image pada nilai FROM
-> - ENV: akan mengisi variable MYSQL_DATABASE dan MYSQL_ROOT_PASSWORD dengan nilai 'test' dan 'password'. Container akan membuat database dengan nama 'test' dan username root dengan password 'inix2021'.
+> - ENV: akan mengisi variable MYSQL_DATABASE dan MYSQL_ROOT_PASSWORD dengan nilai 'test' dan 'password'. 
+> - Container akan membuat database dengan nama 'test' dan username root dengan password 'inix2021'.
+
+----
+
 > - COPY: menyalin berkas test-dump.sql pada lokal direktori ke direktori docker-entrypoint-initdb.d pada direktori di image.
 > - Berkas test-dump.sql, karena diletakkan pada direktori docker-entrypoint-initdb.d, container dari image mysql:5.7 ini akan otomatis mengeksekusi perintah-perintah yang ada didalam berkas test-dump.sql.
 > - Pada saat di run, container akan membuat database dengan nama sistradb, dengan username: root dan password: inix2021
@@ -122,6 +115,7 @@ $ docker images
 ```
 
 > :writing_hand: Catatan:
+>
 > - Perhatikan tanda titik (dot .) diakhir perintah docker build
 ----
 
@@ -159,6 +153,7 @@ $ docker logs -f mysqlku
 ```
 
 > :writing_hand:Catatan:
+>
 > - Jika sukses, perhatikan pada log akan terdapat informasi seperti berikut:
 ```bash
 2021-06-16T05:59:40.122523Z 0 [Note] mysqld: ready for connections.
@@ -188,19 +183,19 @@ $ docker exec -t mysqlku \
 
 ----
 
-#### Aktifkan direktory nodejs
+#### Aktifkan direktori nodejs
 
 ```bash
 $ cd ../nodejs
 $ ls
-Dockerfile  index.js  package.json  package-lock.json  test_connection.js  wait-for-mysql.sh
+Dockerfile  index.js  package.json  package-lock.json 
 ```
-> Catatan:
+> :writing_hand:Catatan:
+>
 > - Dockerfile: untuk membuat Docker Images
 > - package.json: Konfigurasi dan dependencies yang diperlukan aplikasi nodejs
 > - index.js: aplikasi nodejs untuk mengakses data pada mysql
-> - test_connection.js: nodejs script yang digunakan untuk menguji koneksi ke mysql
-> - wait-for-mysql.sh: digunakan container untuk menunggu proses mysql sehingga service mysql aktif dan bisa digunakan
+>
 
 ----
 
@@ -215,7 +210,7 @@ $ docker images
 #### Jalankan container berdasarkan image
 
 ```
-docker run  -d \
+docker run \
 	-p 4000:4000 \
 	-e MYSQL_USER=root \
 	-e MYSQL_PASSWORD=password \
@@ -226,7 +221,17 @@ docker run  -d \
 	-d tutorial/nodejs
 ```
 
+----
+
+> :writing_hand:Catatan:
+> - -p: publish, Mempublish exposing port
+> - -e: environment, menset variable untuk inisial MySQL database
+> - --link: membuat koneksi container **mysqlku** menggunakan alias **db**
+> - --name: memudahkan akses ke container menggunakan nama nodejsku
+> - -d: detach, melepas proses container ke background
+
 ---
+
 ## Prosedur 3: Akses aplikasi
 
 ----
@@ -234,7 +239,8 @@ docker run  -d \
 #### Akses homepage dari app:
 
 ```bash
-$ curl -X GET localhost:4000
+$ curl -X GET localhost:4000/
+{"success":true,"message":"NodeJS dan MySQL dengan docker"}
 ```
 
 #### Tampilkan semua peserta:
@@ -242,29 +248,41 @@ $ curl -X GET localhost:4000
 ```bash
 $ curl -X POST localhost:4000/daftar
 ```
-> :writing_hand:Catatan:
+> :writing_hand:Catatan: (Opsional)
 >
 > - Agar tampilan hasil query diatas tersusun rapi, install jq
 > - di Ubuntu
-```bash
-$ sudo apt install -y jq
-```
+> 
+> ```bash
+> $ sudo apt install -y jq
+> ```
+
+----
+
 > - di Centos
-```bash
-$ sudo dnf install -y jq
-```
-> - Setelah instalasi jq selesai, tambahkan jq pada perintah get-students, seperti dibawah ini:
-```bash
-$ curl -X GET localhost:4000/daftar | jq
-```
+> 
+> ```bash
+> $ sudo dnf install -y jq
+> ```
+
+----
+
+> - Setelah instalasi jq selesai, tambahkan jq, seperti dibawah ini:
+> 
+> ```bash
+> $ curl -X GET localhost:4000/daftar | jq
+> ```
 
 ----
 
 #### Tambahkan peserta
 
 ```bash
-curl --header "Content-Type: application/json" \
-	-d '{"nopeserta": 1130360, "nama": "Abizhar", "alamat": "jl. imam bonjol", "kota":"jakarta"}' \
+$ curl --header "Content-Type: application/json" \
+	-d '{"nopeserta": 1130360, \
+		"nama": "Abizhar", \
+		"alamat": "jl. imam bonjol", \
+		"kota":"jakarta"' \
 	-X POST localhost:4000/tambah
 ```
 
@@ -273,7 +291,8 @@ curl --header "Content-Type: application/json" \
 #### Lihat kembali peserta
 
 ```bash
-$ curl -X POST localhost:4000/get-students | jq
+$ curl -X GET localhost:4000/daftar | jq
 ```
-----
+
+---
 # Terima kasih
