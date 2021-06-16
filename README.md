@@ -1,5 +1,4 @@
 # Menggunakan nodejs-mysql dengan docker
-
 ---
 
 ## Tujuan Instruksional Khusus
@@ -17,7 +16,7 @@
 
 ---
 
-## Prosedur 1: Menjalankan MySQL Container
+### Prosedur 1: Menjalankan MySQL Container
 
 ----
 
@@ -69,14 +68,13 @@ COPY ./test-dump.sql /docker-entrypoint-initdb.d/
 
 > :writing_hand:Catatan:
 > - FROM: membangun berdasarkan image pada nilai FROM
-> - ENV: akan mengisi variable MYSQL_DATABASE dan MYSQL_ROOT_PASSWORD dengan nilai 'test' dan 'password'. 
-> - Container akan membuat database dengan nama 'test' dan username root dengan password 'inix2021'.
+> - ENV: akan mengisi variable MYSQL_DATABASE dan MYSQL_ROOT_PASSWORD dengan nilai 'sistradb' dan 'inix2021'. 
+> - Container akan membuat database dengan nama 'sistradb' dan username root dengan password 'inix2021'.
 
 ----
 
 > - COPY: menyalin berkas test-dump.sql pada lokal direktori ke direktori docker-entrypoint-initdb.d pada direktori di image.
-> - Berkas test-dump.sql, karena diletakkan pada direktori docker-entrypoint-initdb.d, container dari image mysql:5.7 ini akan otomatis mengeksekusi perintah-perintah yang ada didalam berkas test-dump.sql.
-> - Pada saat di run, container akan membuat database dengan nama sistradb, dengan username: root dan password: inix2021
+> - Berkas test-dump.sql, karena diletakkan pada direktori docker-entrypoint-initdb.d,  akan otomatis dieksekusi sewaktu menciptakan database mysql.
 
 ----
 
@@ -103,10 +101,9 @@ UNLOCK TABLES;
 > - Berkas test-dump.sql: berisi perintah untuk menciptakan table peserta (CREATE) dan diisi (INSERT) dengan data dummy
 > - Table peserta akan dibuat secara otomatis, dan diisi dengan 2 record.
 
-
 ----
 
-#### Membangun docker image
+#### Membangun MySQL docker image
 
 ```bash
 $ docker images
@@ -117,6 +114,7 @@ $ docker images
 > :writing_hand: Catatan:
 >
 > - Perhatikan tanda titik (dot .) diakhir perintah docker build
+
 ----
 
 #### Buat docker Volume untuk mysql data
@@ -155,17 +153,16 @@ $ docker logs -f mysqlku
 > :writing_hand:Catatan:
 >
 > - Jika sukses, perhatikan pada log akan terdapat informasi seperti berikut:
-```bash
-2021-06-16T05:59:40.122523Z 0 [Note] mysqld: ready for connections.
-```
+> ```bash
+> 2021-06-16T05:59:40.122523Z 0 [Note] mysqld: ready for connections.
+> ```
 > - Lihat apakah terdapat error?
 > - Minta bantuan fasilitator jika tidak bisa memperbaiki error.
 > - Tekan <ctrl-c> untuk keluar dari logs
 
-
 ----
 
-#### Lihat apakah data dummy telah terbentuk pada database
+#### Lihat apakah data dummy telah terbentuk pada database?
 
 ```bash
 $ docker exec -t mysqlku \
@@ -173,13 +170,13 @@ $ docker exec -t mysqlku \
 ```
 
 > ✍️Catatan:
-> - -p: diisi dengan password
-> - sistradb: nama database yang sebelumnya telah dibuat
+> - -p: diisi dengan password inix2021
+> - sistradb: nama database
 > - -e: perintah SQL yang digunakan untuk melihat data pada table peserta
-> - table peserta beserta datanya di ciptakan melalui file test-dump.sql pada pembahasan sebelumnya
 
 ---
-## Prosedur 2: Menjalankan NodeJS pada docker container
+
+### Prosedur 2: Menjalankan NodeJS pada docker container
 
 ----
 
@@ -190,6 +187,7 @@ $ cd ../nodejs
 $ ls
 Dockerfile  index.js  package.json  package-lock.json 
 ```
+
 > :writing_hand:Catatan:
 >
 > - Dockerfile: untuk membuat Docker Images
@@ -232,7 +230,7 @@ docker run \
 
 ---
 
-## Prosedur 3: Akses aplikasi
+### Prosedur 3: Akses aplikasi
 
 ----
 
