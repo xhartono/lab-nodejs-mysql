@@ -80,18 +80,34 @@ COPY ./test-dump.sql /docker-entrypoint-initdb.d/
 
 #### Lihat isi file test-dump.sql
 
-```bash
-DROP TABLE IF EXISTS `peserta`
+```SQL
+
+USE `sistradb`;
+
+DROP TABLE IF EXISTS `peserta`;
+
 CREATE TABLE `peserta` (
   `nopeserta` int(11) AUTO_INCREMENT,
   `nama` varchar(255) DEFAULT NULL,
   `alamat` varchar(255) DEFAULT NULL,
   `kota` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`nopeserta`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 LOCK TABLES `peserta` WRITE;
-INSERT INTO `peserta` VALUES (1,'Azyva Giselle Kurniawan', 'Ciawi', 'Bogor');
-INSERT INTO `peserta` VALUES (2,'Larasati Kirana', 'Permata Hijau', 'Jakarta');
+
+INSERT INTO `peserta` 
+  VALUES (1,
+    'Azyva Giselle Kurniawan', 
+    'Ciawi', 
+    'Bogor');
+
+INSERT INTO `peserta` 
+  VALUES (2,
+    'Larasati Kirana', 
+    'Permata Hijau', 
+    'Jakarta');
+
 UNLOCK TABLES;
 ```
 
@@ -153,9 +169,9 @@ $ docker logs -f mysqlku
 > :writing_hand:Catatan:
 >
 > - Jika sukses, perhatikan pada log akan terdapat informasi seperti berikut:
-> ```bash
-> 2021-06-16T05:59:40.122523Z 0 [Note] mysqld: ready for connections.
-> ```
+```bash
+2021-06-16T05:59:40.122523Z 0 [Note] mysqld: ready for connections.
+```
 > - Lihat apakah terdapat error?
 > - Minta bantuan fasilitator jika tidak bisa memperbaiki error.
 > - Tekan <ctrl-c> untuk keluar dari logs
@@ -259,17 +275,19 @@ $ curl -X POST localhost:4000/daftar
 
 > - di Centos
 > 
-> ```bash
-> $ sudo dnf install -y jq
-> ```
+```bash
+$ sudo dnf install -y jq
+```
+>
 
 ----
 
 > - Setelah instalasi jq selesai, tambahkan jq, seperti dibawah ini:
 > 
-> ```bash
-> $ curl -X GET localhost:4000/daftar | jq
-> ```
+```bash
+$ curl -X GET localhost:4000/daftar | jq
+```
+>
 
 ----
 
